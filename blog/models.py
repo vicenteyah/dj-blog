@@ -1,10 +1,10 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 # Create your models here.
 
 def user_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/blog<id>/<filename>
-    return 'blog/{0}/{1}'.format(instance.user.id, filename)
+    return 'blog/{0}/{1}'.format(instance.title, filename)
 
 
 class Post(models.Model):
@@ -18,13 +18,13 @@ class Post(models.Model):
         ('published', 'Published'),
     )
 
-    title = models.Charfield(max_length=250)
+    title = models.CharField(max_length=250)
     thumbnail = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
     excerpt = models.TextField(blank=True, null=True)
     content = models.TextField(blank=True, null=True)
     slug = models.SlugField(max_length=250,unique_for_date='published',null=False, unique=True)
-    published = models.DatetimeField(default=timezone.now)
-    author = models.ForeignKey('User', on_delete=models.CASCADE , related_name='post_user')
+    published = models.DateTimeField(default=timezone.now)
+    author = models.ForeignKey(User,on_delete=models.CASCADE , related_name='post_user')
     
     status = models.CharField(max_length=10, choices=options, default='draft')
     objects = models.Manager()
